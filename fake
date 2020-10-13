@@ -1,0 +1,43 @@
+#!/bin/sh
+
+build() {
+
+  sources=`find . -name '*.s'`
+
+  for src in $sources; do
+    (cd `dirname $src` && yasm -f elf64 `basename $src`)
+  done
+
+  libs=`find . \( -name '*.o' ! -name '*.test.o' \)`
+  tests=`find . -name '*.test.o'`
+
+  # realpath
+
+  for tst in $tests; do
+    dir=`dirname $tst`
+    in=`basename $tst`
+    out=`basename $tst .o`
+    (cd $dir && echo ld -o $out $in $libs)
+  done
+
+  
+
+
+
+}
+
+clean() {
+  for obj in `find -name '*.o'`; do
+    rm $obj
+  done
+}
+
+print_help () {
+  echo help
+}
+
+case $1 in
+  build) build ;;
+  clean) clean ;;
+  *) print_help ;;
+esac
