@@ -1,43 +1,47 @@
 #!/bin/sh
 
+include_dirs="foo bar"
+
 build() {
-
-  sources=`find . -name '*.s'`
-
-  for src in $sources; do
-    (cd `dirname $src` && yasm -f elf64 `basename $src`)
+  for src in `find $include_dirs | egrep '\.s$'`; do
+    if [ "$1" = "-d" ]; then
+      yasm -f elf64 -g dwarf2 -l ${src%.s}.l -o ${src%.s}.o $src   
+    else 
+      yasm -f elf64 -o ${src%.s}.o $src   
+    fi
   done
 
-  libs=`find . \( -name '*.o' ! -name '*.test.o' \)`
-  tests=`find . -name '*.test.o'`
+  libs=`find $include_dirs | egrep '\.o$' | egrep -v '\.test.o$'` 
 
-  # realpath
-
-  for tst in $tests; do
-    dir=`dirname $tst`
-    in=`basename $tst`
-    out=`basename $tst .o`
-    (cd $dir && echo ld -o $out $in $libs)
+  for tst in `find $include_dirs | egrep \.test.o`; do
+    if [ "$1" = "-d" ]; then
+      ld -d --gc-sections -o ${tst%.o} $tst $libs
+    else
+      ld --gc-sections -o ${tst%.o} $tst $libs
+    fi
   done
+}
 
-  
-
-
-
+_test() {
+  for tst in `find $include_dirs | egrep '\.test$'`; do
+    $tst
+    echo `[ $? -eq 0 ] && echo passed  || echo failed`: $tst
+  done
 }
 
 clean() {
-  for obj in `find -name '*.o'`; do
+  for obj in `find $include_dirs | egrep '\.o$|\.test$|\.l$'`; do
     rm $obj
   done
 }
 
 print_help () {
-  echo help
+  echo 'fake <build|test|clean|>'
 }
 
 case $1 in
-  build) build ;;
+  build) build $2 ;;
   clean) clean ;;
+  test) _test ;;
   *) print_help ;;
 esac
