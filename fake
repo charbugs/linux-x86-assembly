@@ -14,11 +14,11 @@ _build() {
       # if debug option was passed
       if [ "$1" = "-d" ]; then
         yasm -f elf64 -g dwarf2 -l ${src%.s}.l -o ${src%.s}.o $src
-        ld -d -o ${src%.s} ${src%.s}.o
+        ld -d -o ${src%.s}.b ${src%.s}.o
       # no debug option
       else 
         yasm -f elf64 -o ${src%.s}.o $src
-        ld -o ${src%.s} ${src%.s}.o
+        ld -o ${src%.s}.b ${src%.s}.o
       fi
     fi
   done
@@ -26,7 +26,7 @@ _build() {
 
 # Runs every executable file under './tests' and reports about the exit values.
 _test() {
-  for fname in `find ./tests -type f`; do
+  for fname in `find ./tests -type f | egrep '\.b$'`; do
     file $fname | grep executable > /dev/null
     # if file is executable
     if [ $? -eq 0 ]; then
