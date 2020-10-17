@@ -1,21 +1,55 @@
 #!/bin/bash
 
-_test() {
-  target=$1
-  yasm -f elf64 -o test/${target}.o test/${target}.s
-  ld -o test/$target test/${target}.o
-  test/$target
-  echo
-  echo   $?
+# They should only contain *.s file.
+# All other files will be removed by the `clean` command.
+source_dirs="./apps ./libs ./tests"
+
+
+# Builds files from source dirs that include the '_start:' label. 
+_build() {
+  for src in `find $source_dirs -type f | egrep '\.s$'`; do
+    cat $src | egrep '^_start:' > /dev/null
+    # if source file containes '_start:' label
+    if [ $? -eq 0 ]; then
+      # if debug option was passed
+      if [ "$1" = "-d" ]; then
+        yasm -f elf64 -g dwarf2 -l ${src%.s}.l -o ${src%.s}.o $src
+        ld -d -o ${src%.s} ${src%.s}.o
+      # no debug option
+      else 
+        yasm -f elf64 -o ${src%.s}.o $src
+        ld -o ${src%.s} ${src%.s}.o
+      fi
+    fi
+  done
 }
 
-clean() {
-  for fname in `find ./test | egrep '\.o$|\.test$|\.l$'`; do
+# Runs every executable file under './tests' and reports about the exit values.
+_test() {
+  for fname in `find ./tests -type f`; do
+    file $fname | grep executable > /dev/null
+    # if file is executable
+    if [ $? -eq 0 ]; then
+      output=`$fname`
+      echo `[ $? -eq 0 ] && echo passed  || echo failed`: $fname
+    fi
+  done
+}
+
+_clean() {
+  for fname in `find $source_dirs -type f | egrep -v '\.s$'`; do
     rm $fname
   done
 }
 
+_help() {
+  echo "fake <build|test|clean>"
+}
+
 case $1 in
-  test) _test $2 ;;
-  clean) clean ;; 
+  build) _build $2 ;;
+  test) _test ;;
+  clean) _clean ;;
+  help) _help ;;
+  *) _help ;;
 esac

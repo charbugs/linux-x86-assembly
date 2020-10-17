@@ -3,8 +3,8 @@
 
 section .text
 
-; Prints a null terminated string to stdout and appends a new line.
-; void println(char* string)
+; Writes a null terminated string and appends a new line.
+; void println(int fd, char* string)
 global println
 println:
   ; prologue
@@ -13,14 +13,15 @@ println:
   xor rax, rax
 
   ; locals
-  sub rsp, 16
-  mov [rsp + 8], rdi ; string
+  sub rsp, 24
+  mov [rsp + 16], rdi ; fd
+  mov [rsp + 8], rsi ; string
   mov [rsp + 0], byte 10 ; line feed
 
-  call strlen ; string* already in rdi
+  call strlen ; string already in rdi
 
   ; print string  
-  mov rdx, rax ; size of string 
+  mov rdx, rax ; size of string
   mov rax, SYS_WRITE
   mov rdi, STDOUT
   mov rsi, [rsp + 8]

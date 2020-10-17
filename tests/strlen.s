@@ -1,5 +1,5 @@
-%include "../src/utils/constants.s"
-%include "../src/utils/strlen.s"
+%include "../libs/constants.s"
+%include "../libs/strlen.s"
 
 section .data
   msg db "hello", 0

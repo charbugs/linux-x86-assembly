@@ -1,5 +1,5 @@
-%include "../src/utils/constants.s"
-%include "../src/utils/println.s"
+%include "../libs/constants.s"
+%include "../libs/println.s"
 
 section .data
   msg db "hello", 0
