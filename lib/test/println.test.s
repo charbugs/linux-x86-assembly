@@ -1,5 +1,4 @@
-%include "../libs/constants.s"
-%include "../libs/println.s"
+extern SYS_EXIT, println
 
 section .data
   msg db "hello", 0
@@ -8,10 +7,18 @@ section .text
 
 global _start
 _start:
+  nop
   mov rdi, msg
   call println
+  cmp rax, 5
+  jne exit_fail
 
-exit:
+exit_success:
   mov rax, SYS_EXIT
   mov rdi, 0
+  syscall
+
+exit_fail:
+  mov rax, SYS_EXIT
+  mov rdi, 1
   syscall

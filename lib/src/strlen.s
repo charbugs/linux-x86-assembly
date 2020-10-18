@@ -2,6 +2,7 @@ section .text
 
 ; similar to strlen(3)
 ; int strlen(char* string)
+; global strlen
 global strlen
 strlen:
   xor rax, rax

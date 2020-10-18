@@ -1,14 +1,14 @@
-%include "../libs/constants.s"
-%include "../libs/strlen.s"
+extern SYS_EXIT, print
 
 section .data
   msg db "hello", 0
 
 section .text
+
 global _start
 _start:
   mov rdi, msg
-  call strlen
+  call print
   cmp rax, 5
   jne exit_fail
 
