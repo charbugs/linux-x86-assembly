@@ -1,0 +1,39 @@
+#!/bin/sh
+
+set -e
+
+buildlib() {
+
+  # create and/or clean build dir
+  mkdir -p lib/build
+  rm -f lib/build/*
+
+  # build library
+  for src in lib/src/*.s ; do
+    obj=lib/build/`basename $src .s`.o
+    yasm -f elf64 -g dwarf2 -o $obj $src
+  done
+
+  ar -csr lib/build/lib.a lib/build/*.o
+  rm lib/build/*.o
+
+  # build tests
+  for src in lib/test/*.test.s ; do
+    obj=lib/build/`basename $src .s`.o
+    yasm -f elf64 -g dwarf2 -o $obj $src
+    ld -g -o ${obj%.o} $obj lib/build/lib.a
+    rm $obj
+  done
+}
+
+testlib() {
+  for bin in lib/build/*.test ; do
+    output=`$bin`
+    echo `[ $? -eq 0 ] && echo passed  || echo failed`: $bin
+  done
+}
+
+case $1 in
+  buildlib) buildlib ;;
+  testlib) testlib ;;
+esac
