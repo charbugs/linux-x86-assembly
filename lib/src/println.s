@@ -1,4 +1,8 @@
-extern strlen, STDOUT, SYS_WRITE
+%ifndef PRINTLN_S
+%define PRINTLN_S
+
+%include "constants.s"
+%include "strlen.s"
 
 section .data
   LF dq 10
@@ -37,3 +41,5 @@ println:
   mov rsp, rbp
   pop rbp
   ret
+
+%endif

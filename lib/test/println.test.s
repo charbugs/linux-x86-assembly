@@ -1,4 +1,5 @@
-extern SYS_EXIT, println
+%include "../src/constants.s"
+%include "../src/println.s"
 
 section .data
   msg db "hello", 0
