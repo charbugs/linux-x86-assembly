@@ -1,4 +1,5 @@
-extern strlen, SYS_EXIT
+%include "../src/constants.s"
+%include "../src/strlen.s"
 
 section .data
   msg db "hello", 0

@@ -8,20 +8,11 @@ buildlib() {
   mkdir -p lib/build
   rm -f lib/build/*
 
-  # build library
-  for src in lib/src/*.s ; do
-    obj=lib/build/`basename $src .s`.o
-    yasm -f elf64 -g dwarf2 -o $obj $src
-  done
-
-  ar -csr lib/build/lib.a lib/build/*.o
-  rm lib/build/*.o
-
   # build tests
   for src in lib/test/*.test.s ; do
     obj=lib/build/`basename $src .s`.o
-    yasm -f elf64 -g dwarf2 -o $obj $src
-    ld -g -o ${obj%.o} $obj lib/build/lib.a
+    nasm -i lib/src -f elf64 -g -F dwarf -o $obj $src
+    ld -o ${obj%.o} $obj
     rm $obj
   done
 }

@@ -1,4 +1,8 @@
-extern SYS_WRITE, STDOUT, strlen
+%ifndef PRINT_S
+%define PRINT_S
+
+%include "constants.s"
+%include "strlen.s"
 
 section .text
 
@@ -23,3 +27,4 @@ print:
   pop r12
   ret
   
+%endif

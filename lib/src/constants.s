@@ -1,14 +1,10 @@
-global SYS_READ
-SYS_READ equ 0
+%ifndef CONSTANTS_S
+%define CONSTANTS_S
 
-global SYS_WRITE
-SYS_WRITE equ 1
+%define SYS_READ 0
+%define SYS_WRITE 1
+%define SYS_EXIT 60
+%define STDIN 0
+%define STDOUT 1
 
-global SYS_EXIT
-SYS_EXIT equ 60
-
-global STDIN
-STDIN equ 0
-
-global STDOUT
-STDOUT equ 1
+%endif
