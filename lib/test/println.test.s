@@ -1,4 +1,4 @@
-%include "../src/constants.s"
+%include "../src/assert.s"
 %include "../src/println.s"
 
 section .data
@@ -8,18 +8,9 @@ section .text
 
 global _start
 _start:
-  nop
   mov rdi, msg
   call println
-  cmp rax, 5
-  jne exit_fail
+  assert rax, 5, 1
+  exit 0
+  
 
-exit_success:
-  mov rax, SYS_EXIT
-  mov rdi, 0
-  syscall
-
-exit_fail:
-  mov rax, SYS_EXIT
-  mov rdi, 1
-  syscall

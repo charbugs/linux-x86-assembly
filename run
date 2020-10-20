@@ -1,8 +1,9 @@
 #!/bin/sh
 
-set -e
-
 buildlib() {
+
+  # abort if one of the following commands are failing
+  set -e
 
   # create and/or clean build dir
   mkdir -p lib/build
@@ -15,12 +16,16 @@ buildlib() {
     ld -o ${obj%.o} $obj
     rm $obj
   done
+
+  # the test function bellow should not abort if one of the test are failing
+  set +e
 }
 
 testlib() {
   for bin in lib/build/*.test ; do
     output=`$bin`
-    echo `[ $? -eq 0 ] && echo passed  || echo failed`: $bin
+    exval=$?
+    echo `[ $exval -eq 0 ] && echo passed  || echo failed "($exval)"`: $bin
   done
 }
 

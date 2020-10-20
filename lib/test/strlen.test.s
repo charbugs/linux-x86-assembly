@@ -1,4 +1,4 @@
-%include "../src/constants.s"
+%include "../src/assert.s"
 %include "../src/strlen.s"
 
 section .data
@@ -10,15 +10,10 @@ _start:
   nop
   mov rdi, msg
   call strlen
-  cmp rax, 5
-  jne exit_fail
+  assert rax, 5, 1
+  
+  exit 0
 
-exit_success:
-  mov rax, SYS_EXIT
-  mov rdi, 0
-  syscall
+  
 
-exit_fail:
-  mov rax, SYS_EXIT
-  mov rdi, 1
-  syscall
+
