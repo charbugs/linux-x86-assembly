@@ -18,6 +18,7 @@ atol:
   mov r12, rdi      ; string that was passed
   xor r13, r13      ; number to calculate
   mov r14, 10
+  xor r15, r15
 
 .space_loop:
   movzx rdi, byte [r12]
