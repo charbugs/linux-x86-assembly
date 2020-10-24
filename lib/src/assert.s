@@ -16,4 +16,22 @@
   %%continue:
 %endmacro
 
+%macro set_non_volatile_registers 0
+  mov rbp, 123456
+  mov rbx, 123456
+  mov r12, 123456
+  mov r13, 123456
+  mov r14, 123456
+  mov r15, 123456
+%endmacro
+
+%macro assert_non_volatile_registers 1
+  assert rbp, 123456, %1
+  assert rbx, 123456, %1
+  assert r12, 123456, %1
+  assert r13, 123456, %1
+  assert r14, 123456, %1
+  assert r15, 123456, %1
+%endmacro
+
 %endif

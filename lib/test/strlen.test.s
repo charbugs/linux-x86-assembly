@@ -7,10 +7,17 @@ section .data
 section .text
 global _start
 _start:
-  nop
+
+.test_1:
+  set_non_volatile_registers
   mov rdi, msg
   call strlen
-  assert rax, 5, 1
+  assert_non_volatile_registers 1
+
+.test_2:
+  mov rdi, msg
+  call strlen
+  assert rax, 5, 2
   
   exit 0
 

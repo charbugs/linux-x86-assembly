@@ -5,46 +5,52 @@ section .text
 global _start
 _start:
 
-; space
 .test_1:
+  set_non_volatile_registers
   mov rdi, " "
   call isspace
-  assert rax, 1, 1
+  assert_non_volatile_registers 1
 
-; tab
+; space
 .test_2:
-  mov rdi, `\t`
+  mov rdi, " "
   call isspace
   assert rax, 1, 2
 
-; line feed
+; tab
 .test_3:
-  mov rdi, `\n`
+  mov rdi, `\t`
   call isspace
   assert rax, 1, 3
 
-; vertical tab
+; line feed
 .test_4:
-  mov rdi, `\v`
+  mov rdi, `\n`
   call isspace
   assert rax, 1, 4
 
-; form feed
+; vertical tab
 .test_5:
-  mov rdi, `\f`
+  mov rdi, `\v`
   call isspace
   assert rax, 1, 5
 
-; carriage return
+; form feed
 .test_6:
-  mov rdi, `\r`
+  mov rdi, `\f`
   call isspace
   assert rax, 1, 6
 
-; non space
+; carriage return
 .test_7:
+  mov rdi, `\r`
+  call isspace
+  assert rax, 1, 7
+
+; non space
+.test_8:
   mov rdi, "a"
   call isspace
-  assert rax, 0, 7
+  assert rax, 0, 8
 
   exit 0

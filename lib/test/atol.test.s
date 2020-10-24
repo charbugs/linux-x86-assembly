@@ -15,6 +15,12 @@ section .text
 global _start
 _start:
 
+.test_10:
+  set_non_volatile_registers
+  mov rdi, string1
+  call atol
+  assert_non_volatile_registers 10
+
 .test_1:
   mov rdi, string1
   call atol
