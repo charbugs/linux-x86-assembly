@@ -11,15 +11,17 @@ section .text
 ; long atoi(char* s)
 global atol
 atol:
-  push r12
-  push r13
-  push r14
-  push r15
-  mov r12, rdi      ; string that was passed
-  xor r13, r13      ; number to calculate
-  mov r14, 10
-  xor r15, r15
+  push r12          ; use: input string
+  push r13          ; use: resulting number
+  push r14          ; use: base 10
+  push r15          ; use: sign
 
+  mov r12, rdi      ; save input string
+  xor r13, r13      ; set result number to null
+  xor r15, r15      ; set sign to false (which means plus)
+  mov r14, 10       ; set base 10
+
+; forward string until we find the first non-space character
 .space_loop:
   movzx rdi, byte [r12]
   call isspace
@@ -28,6 +30,7 @@ atol:
   inc r12
   jmp .space_loop
 
+; check if the next character is a plus or minus sign
 .check_sign:
   cmp byte [r12], "+"
   je .set_plus
@@ -36,22 +39,23 @@ atol:
   jmp .calc_loop
 
 .set_plus:
-  mov r15, 0
+  mov r15, 0        ; false means plus
   inc r12
   jmp .calc_loop
 
 .set_minus:
-  mov r15, 1
+  mov r15, 1        ; true means minus
   inc r12
   jmp .calc_loop
 
+; calculate the number from the string
 .calc_loop:
   movzx rdi, byte [r12]
   call isdigit
   cmp rax, 0
-  je .possibly_negate                  ; if current char isn't a digit return what we calculatet so far
-  movzx rdi, byte [r12]       ; copy current digit
-  sub rdi, "0"                ; get integer value of digit
+  je .possibly_negate         
+  movzx rdi, byte [r12]
+  sub rdi, "0"
   mov rax, r13
   mul r14
   mov r13, rax
