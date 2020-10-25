@@ -15,42 +15,42 @@ _start:
 .test_2:
   mov rdi, " "
   call isspace
-  assert rax, 1, 2
+  assert_cmp_eq rax, 1, 2
 
 ; tab
 .test_3:
   mov rdi, `\t`
   call isspace
-  assert rax, 1, 3
+  assert_cmp_eq rax, 1, 3
 
 ; line feed
 .test_4:
   mov rdi, `\n`
   call isspace
-  assert rax, 1, 4
+  assert_cmp_eq rax, 1, 4
 
 ; vertical tab
 .test_5:
   mov rdi, `\v`
   call isspace
-  assert rax, 1, 5
+  assert_cmp_eq rax, 1, 5
 
 ; form feed
 .test_6:
   mov rdi, `\f`
   call isspace
-  assert rax, 1, 6
+  assert_cmp_eq rax, 1, 6
 
 ; carriage return
 .test_7:
   mov rdi, `\r`
   call isspace
-  assert rax, 1, 7
+  assert_cmp_eq rax, 1, 7
 
 ; non space
 .test_8:
   mov rdi, "a"
   call isspace
-  assert rax, 0, 8
+  assert_cmp_eq rax, 0, 8
 
   exit 0

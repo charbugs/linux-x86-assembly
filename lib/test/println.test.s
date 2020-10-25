@@ -18,7 +18,7 @@ _start:
 .test_2:
   mov rdi, msg
   call println
-  assert rax, 5, 2
+  assert_cmp_eq rax, 5, 2
   
   exit 0
   

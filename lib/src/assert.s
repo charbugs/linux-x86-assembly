@@ -9,7 +9,7 @@
   syscall
 %endmacro
 
-%macro assert 3
+%macro assert_cmp_eq 3
   cmp %1, %2
   je %%continue
   exit %3
@@ -26,12 +26,12 @@
 %endmacro
 
 %macro assert_non_volatile_registers 1
-  assert rbp, 123456, %1
-  assert rbx, 123456, %1
-  assert r12, 123456, %1
-  assert r13, 123456, %1
-  assert r14, 123456, %1
-  assert r15, 123456, %1
+  assert_cmp_eq rbp, 123456, %1
+  assert_cmp_eq rbx, 123456, %1
+  assert_cmp_eq r12, 123456, %1
+  assert_cmp_eq r13, 123456, %1
+  assert_cmp_eq r14, 123456, %1
+  assert_cmp_eq r15, 123456, %1
 %endmacro
 
 %endif

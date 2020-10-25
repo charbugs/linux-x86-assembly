@@ -14,21 +14,21 @@ _start:
 .test_2:
   mov rdi, "0"
   call isdigit
-  assert rax, 1, 2
+  assert_cmp_eq rax, 1, 2
 
 .test_3:
   mov rdi, "9"
   call isdigit
-  assert rax, 1, 3
+  assert_cmp_eq rax, 1, 3
 
 .test_4:
   mov rdi, "/"
   call isdigit
-  assert rax, 0, 4
+  assert_cmp_eq rax, 0, 4
 
 .test_5:
   mov rdi, ":"
   call isdigit
-  assert rax, 0, 5
+  assert_cmp_eq rax, 0, 5
 
   exit 0
