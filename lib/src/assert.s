@@ -2,6 +2,7 @@
 %define ASSERT_S
 
 %include "constants.s"
+%include "strcmp.s"
 
 %macro exit 1
   mov rax, SYS_EXIT
@@ -11,6 +12,16 @@
 
 %macro assert_cmp_eq 3
   cmp %1, %2
+  je %%continue
+  exit %3
+  %%continue:
+%endmacro
+
+%macro assert_str_eq 3
+  mov rdi, %1
+  mov rsi, %2
+  call strcmp
+  cmp rax, 0
   je %%continue
   exit %3
   %%continue:
