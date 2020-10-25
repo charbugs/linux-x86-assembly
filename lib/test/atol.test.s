@@ -11,6 +11,7 @@ section .text
   string7 db "+123", 0
   string8 db "-123", 0
   string9 db "  -123foo", 0
+  string11 db "", 0
 
 global _start
 _start:
@@ -71,5 +72,11 @@ _start:
   mov rdi, string9
   call atol
   assert_cmp_eq rax, -123, 9
+
+; return 0 if string is empty
+.test_11:
+  mov rdi, string11
+  call atol
+  assert_cmp_eq rax, 0, 11
 
   exit 0

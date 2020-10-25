@@ -3,6 +3,7 @@
 
 section .data
   msg db "hello", 0
+  empty db "", 0
 
 section .text
 
@@ -19,5 +20,11 @@ _start:
   mov rdi, msg
   call print
   assert_cmp_eq rax, 5, 2
+
+; works with empty string
+.test_3:
+  mov rdi, empty
+  call print
+  assert_cmp_eq rax, 0, 3
   
   exit 0

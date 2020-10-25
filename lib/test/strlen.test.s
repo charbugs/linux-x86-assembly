@@ -3,6 +3,7 @@
 
 section .data
   msg db "hello", 0
+  empty db "", 0
 
 section .text
 global _start
@@ -18,6 +19,11 @@ _start:
   mov rdi, msg
   call strlen
   assert_cmp_eq rax, 5, 2
+
+.test_3:
+  mov rdi, empty
+  call strlen
+  assert_cmp_eq rax, 0, 3
   
   exit 0
 
