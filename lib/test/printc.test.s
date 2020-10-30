@@ -7,7 +7,7 @@ _start:
 
 test_1:
   set_non_volatile_registers
-  mov dl, "x"
+  mov dil, "x"
   call printc
   assert_non_volatile_registers 1
 
