@@ -5,7 +5,7 @@
 
 section .text
 
-; turns a number into a string
+; turns a number into a null terminated string
 ; 
 ; strategy is to interative divide the number by 10,
 ; transform the division rest into it's ascii respresentation
