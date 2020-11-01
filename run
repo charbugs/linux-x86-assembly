@@ -1,28 +1,30 @@
 #!/bin/sh
 
-buildlib() {
-
-  # abort if one of the following commands are failing
+build() {
+  # abort if one of the following commands fails
   set -e
 
-  # create and/or clean build dir
-  mkdir -p lib/build
-  rm -f lib/build/*
+  # the target directory the function should work on
+  target=$1
 
-  # build tests
-  for src in lib/test/*.test.s ; do
-    obj=lib/build/`basename $src .s`.o
-    nasm -i lib/src -f elf64 -g -F dwarf -o $obj $src
+  # create and/or clean build dir
+  mkdir -p $target/build
+  rm -f $target/build/*
+
+  # build everthing that has the _start label
+  for src in `grep -rl $target -e 'global _start'` ; do
+    obj=$target/build/`basename $src .s`.o
+    nasm -i $target/src -f elf64 -g -F dwarf -o $obj $src
     ld -o ${obj%.o} $obj
     rm $obj
   done
 
-  # the test function bellow should not abort if one of the test are failing
+  # the test function bellow should not abort if one of the tests fails 
   set +e
 }
 
-testlib() {
-  for bin in lib/build/*.test ; do
+_test() {
+  for bin in $1/build/*.test ; do
     output=`$bin`
     exval=$?
     echo `[ $exval -eq 0 ] && echo passed  || echo failed "($exval)"`: $bin
@@ -30,6 +32,7 @@ testlib() {
 }
 
 case $1 in
-  buildlib) buildlib ;;
-  testlib) testlib ;;
+  test)  _test $2 ;;
+  build) build $2 ;;
+  *)  echo "run: unknown command"
 esac
