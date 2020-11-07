@@ -4,76 +4,91 @@
 %include "isdigit.s"
 %include "isspace.s"
 
+; char* - null terminated input digit string
+%define digits  [rbp - 8]
+; long - output number
+%define number  [rbp - 16]
+; long - base 10 because digits represent a decimal number
+%define base10  [rbp - 24]
+; bool - 0 if +, 1 if -
+%define sign    [rbp - 25]
+; stack size
+%define stack_size 25
+
 section .text
 
-; similar to man atol(3)
+; similar to man atol(3).
 ; passed string must be null terminated.
-; long atoi(char* s)
+; only treats decimal.
+;
+; long atoi(char* digits)
+;
 global atol
 atol:
-  push r12          ; use: input string
-  push r13          ; use: resulting number
-  push r14          ; use: base 10
-  push r15          ; use: sign
+  push rbp
+  mov rbp, rsp
+  sub rsp, stack_size
 
-  mov r12, rdi      ; save input string
-  xor r13, r13      ; set result number to null
-  xor r15, r15      ; set sign to false (which means plus)
-  mov r14, 10       ; set base 10
+  mov digits, rdi
+  mov qword number, 0
+  mov qword base10, 10
+  mov sign, byte 0
 
 ; forward string until we find the first non-space character
 .space_loop:
-  movzx rdi, byte [r12]
+  mov rdi, digits
+  movzx rdi, byte [rdi]
   call isspace
   cmp rax, 0
   je .check_sign
-  inc r12
+  inc qword digits
   jmp .space_loop
 
 ; check if the next character is a plus or minus sign
 .check_sign:
-  cmp byte [r12], "+"
+  mov rdi, digits
+  cmp [rdi], byte "+"
   je .set_plus
-  cmp byte [r12], "-"
+  cmp [rdi], byte "-"
   je .set_minus
   jmp .calc_loop
 
 .set_plus:
-  mov r15, 0        ; false means plus
-  inc r12
+  mov sign, byte 0        ; false means plus
+  inc qword digits
   jmp .calc_loop
 
 .set_minus:
-  mov r15, 1        ; true means minus
-  inc r12
+  mov sign, byte 1        ; true means minus
+  inc qword digits
   jmp .calc_loop
 
 ; calculate the number from the string
 .calc_loop:
-  movzx rdi, byte [r12]
+  mov rdi, digits
+  movzx rdi, byte [rdi]
   call isdigit
   cmp rax, 0
   je .possibly_negate         
-  movzx rdi, byte [r12]
+  mov rdi, digits
+  movzx rdi, byte [rdi]
   sub rdi, "0"
-  mov rax, r13
-  mul r14
-  mov r13, rax
-  add r13, rdi
-  inc r12
+  mov rax, number
+  mul qword base10
+  mov number, rax
+  add number, rdi
+  inc qword digits
   jmp .calc_loop
 
 .possibly_negate:
-  cmp r15, 0
+  cmp sign, byte 0
   je .return
-  neg r13
+  neg qword number
 
 .return:
-  mov rax, r13
-  pop r15
-  pop r14
-  pop r13
-  pop r12
+  mov rax, number
+  mov rsp, rbp
+  pop rbp
   ret
 
 %endif
