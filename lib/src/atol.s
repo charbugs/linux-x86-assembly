@@ -5,13 +5,13 @@
 %include "isspace.s"
 
 ; char* - null terminated input digit string
-%define digits  [rbp - 8]
+%define digits  qword [rbp - 8]
 ; long - output number
-%define number  [rbp - 16]
+%define number  qword [rbp - 16]
 ; long - base 10 because digits represent a decimal number
-%define base10  [rbp - 24]
+%define base10  qword [rbp - 24]
 ; bool - 0 if +, 1 if -
-%define sign    [rbp - 25]
+%define sign    byte [rbp - 25]
 ; stack size
 %define stack_size 25
 
@@ -30,9 +30,9 @@ atol:
   sub rsp, stack_size
 
   mov digits, rdi
-  mov qword number, 0
-  mov qword base10, 10
-  mov sign, byte 0
+  mov number, 0
+  mov base10, 10
+  mov sign, 0
 
 ; forward string until we find the first non-space character
 .space_loop:
@@ -41,7 +41,7 @@ atol:
   call isspace
   cmp rax, 0
   je .check_sign
-  inc qword digits
+  inc digits
   jmp .space_loop
 
 ; check if the next character is a plus or minus sign
@@ -54,13 +54,13 @@ atol:
   jmp .calc_loop
 
 .set_plus:
-  mov sign, byte 0        ; false means plus
+  mov sign, 0        ; false means plus
   inc qword digits
   jmp .calc_loop
 
 .set_minus:
-  mov sign, byte 1        ; true means minus
-  inc qword digits
+  mov sign, 1        ; true means minus
+  inc digits
   jmp .calc_loop
 
 ; calculate the number from the string
@@ -74,16 +74,16 @@ atol:
   movzx rdi, byte [rdi]
   sub rdi, "0"
   mov rax, number
-  mul qword base10
+  mul base10
   mov number, rax
   add number, rdi
-  inc qword digits
+  inc digits
   jmp .calc_loop
 
 .possibly_negate:
-  cmp sign, byte 0
+  cmp sign, 0
   je .return
-  neg qword number
+  neg number
 
 .return:
   mov rax, number
