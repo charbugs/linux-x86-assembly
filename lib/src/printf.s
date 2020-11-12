@@ -30,9 +30,9 @@
   mov rdi, [rbp + (rax * 8) + 16]
 %endmacro
 
-section .data
+section .bss
   ; ltoa() will store the digits here
-  digits db 20
+  digits resb 20
 
 section .text 
 global printf
