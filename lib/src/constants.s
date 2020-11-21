@@ -1,12 +1,14 @@
 %ifndef CONSTANTS_S
 %define CONSTANTS_S
 
-%define SYS_READ    0
-%define SYS_WRITE   1
-%define SYS_OPEN    2
-%define SYS_CLOSE   3
-%define SYS_BRK     12
-%define SYS_EXIT    60
+%define SYS_READ        0
+%define SYS_WRITE       1
+%define SYS_OPEN        2
+%define SYS_CLOSE       3
+%define SYS_BRK         12
+%define SYS_NANOSLEEP   35
+%define SYS_EXIT        60
+%define SYS_GETRANDOM   318
 
 %define STDIN   0
 %define STDOUT  1
