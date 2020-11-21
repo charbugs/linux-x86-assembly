@@ -14,7 +14,7 @@ build() {
   # build everthing that has the _start label
   for src in `grep -rl $target -e 'global _start'` ; do
     obj=$target/build/`basename $src .s`.o
-    nasm -i lib/src -f elf64 -g -F dwarf -o $obj $src
+    nasm -i lib/src -i $target/src  -f elf64 -g -F dwarf -o $obj $src
     ld -o ${obj%.o} $obj
     rm $obj
   done
