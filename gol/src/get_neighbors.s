@@ -1,95 +1,92 @@
 %include "board.s"
 
-%define north   rbp - 1
-%define east    rbp - 2
-%define south   rbp - 3
-%define west    rbp - 4
-%define STACK_SIZE 4
+%define nw  rbp - 8
+%define n   rbp - 16
+%define ne  rbp - 24
+%define w   rbp - 32
+%define e   rbp - 40
+%define sw  rbp - 48
+%define s   rbp - 56
+%define se  rbp - 64
+%define STACK_SIZE 64
 
 section .text
 
-; Returns 4 bytes in eax where each byte represents a neighbor of the cell.
-; The order is (from highest to lowest byte): N, E, S, W
-;
 ; int get_neighbors(board *board, int cell)
 get_neighbors:
     push rbp
     mov rbp, rsp
-    sub rsp, STACK_SIZE     
-.get_north:
-    cmp rsi, [rdi + BOARD_COLS]
-    jl .overflow_north
-    lea r8, [rdi + BOARD_CELLS]
-    add r8, rsi
-    sub r8, [rdi + BOARD_COLS] 
-    mov al, [r8]
-    mov [north], al
-    jmp .get_east
-.overflow_north:
-    lea r8, [rdi + BOARD_CELLS]
-    add r8, rsi
+    sub rsp, STACK_SIZE
+    ; nw
+    mov r8, rsi
+    sub r8, [rdi + BOARD_COLS]
+    sub r8, 1
+    mov [nw], r8
+    ; n
+    mov r8, rsi
+    sub r8, [rdi  + BOARD_COLS]
+    mov [n], r8
+    ; ne
+    mov r8, rsi
+    sub r8, [rdi + BOARD_COLS]
+    add r8, 1
+    mov [ne], r8
+    ; w
+    mov r8, rsi
+    sub r8, 1
+    mov [w], r8
+    ; e
+    mov r8, rsi
+    add r8, 1
+    mov [e], r8
+    ; sw
+    mov r8, rsi
+    add r8, [rdi + BOARD_COLS]
+    sub r8, 1
+    mov [sw], r8
+    ; s
+    mov r8, rsi
+    add r8, [rdi + BOARD_COLS]
+    mov [s], r8
+    ; se
+    mov r8, rsi
+    add r8, [rdi + BOARD_COLS]
+    add r8, 1
+    mov [se], r8
+
+    xor rcx, rcx
+.handle_outsiders:
+    cmp rcx, 8          ; 8 neighbors
+    je .get_values
+    mov r8, [rsp + rcx * 8]
+    cmp r8, 0
+    jl .handle_underflow
+    cmp r8, [rdi + BOARD_TOTAL]
+    jge .handle_overflow
+    jmp .continue
+.handle_underflow:
     add r8, [rdi + BOARD_TOTAL]
-    sub r8, [rdi + BOARD_COLS]
-    mov al, [r8]
-    mov [north], al
-.get_east:
-    mov rax, rsi 
-    add rax, 1
-    cqo
-    idiv qword [rdi + BOARD_COLS]
-    cmp rdx, 0
-    je .overflow_east
-    lea r8, [rdi + BOARD_CELLS]
-    add r8, rsi
-    add r8, 1
-    mov al, [r8]
-    mov [east], al
-    jmp .get_south
-.overflow_east:
-    lea r8, [rdi + BOARD_CELLS]
-    add r8, rsi
-    sub r8, [rdi + BOARD_COLS]
-    add r8, 1
-    mov al, [r8]
-    mov [east], al
-.get_south:
-    mov r9, rsi
-    add r9, [rdi + BOARD_COLS]
-    cmp r9, [rdi + BOARD_TOTAL]
-    jge .overflow_south
-    lea r8, [rdi + BOARD_CELLS]
-    add r8, rsi
-    add r8, [rdi + BOARD_COLS]
-    mov al, [r8]
-    mov [south], al
-    jmp .get_west
-.overflow_south:
-    lea r8, [rdi + BOARD_CELLS]
-    add r8, r9
+    mov [rsp + rcx * 8], r8
+    jmp .continue
+.handle_overflow:
     sub r8, [rdi + BOARD_TOTAL]
-    mov al, [r8]
-    mov [south], al
-.get_west:
-    mov rax, rsi
-    add rax, 1
-    cqo
-    idiv qword [rdi + BOARD_COLS]
-    cmp rdx, 1
-    je .overflow_west
-    lea r8, [rdi + BOARD_CELLS]
-    add r8, rsi
-    sub r8, 1
-    mov al, [r8]
-    mov [west], al
-    jmp .return
-.overflow_west:
-    lea r8, [rdi + BOARD_CELLS]
-    add r8, rsi
-    add r8, [rdi + BOARD_COLS]
-    sub r8, 1
-    mov al, [r8]
-    mov [west], al
+    mov [rsp + rcx * 8], r8
+.continue:
+    inc rcx
+    jmp .handle_outsiders
+
+.get_values:
+    xor rax, rax
+    xor rcx, rcx
+.get_values_loop:
+    cmp rcx, 8          ; 8 neighbors
+    je .return
+    shl rax, 8
+    mov r8, [rsp + rcx * 8]
+    mov al, [rdi + BOARD_CELLS + r8]
+    inc rcx
+    jmp .get_values_loop
+
 .return:
-    mov eax, [west]
     leave
     ret

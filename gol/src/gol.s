@@ -39,7 +39,7 @@ _start:
     call randbyte
     mov r8, 0
     mov r9, 1
-    cmp al, 110
+    cmp al, 64
     cmovg r8, r9
     mov byte [rsp + BOARD_CELLS + r12], r8b
     inc r12
